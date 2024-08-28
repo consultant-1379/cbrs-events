@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>cbrs-events</artifactId>
+        <groupId>com.ericsson.oss.services.domainproxy</groupId>
+        <version>1.0.14-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ERICDomainProxyEvents_CXP111111</artifactId>
+    <packaging>${rpm.packaging}</packaging>
+
+    <name>[${project.parent.artifactId}] CXP module</name>
+
+    <properties>
+        <publish_artifact>true</publish_artifact>
+        <media.category>scripting</media.category>
+        <com.ericsson.oss.rpm.architecture>noarch</com.ericsson.oss.rpm.architecture>
+        <!-- Install path = /${rpm-root}/${comp-name}/${install-path} -->
+        <rpm-root>opt</rpm-root>
+        <comp-name>ericsson</comp-name>
+        <install-path>com.ericsson.oss.ci-archetypes</install-path>
+        <install-path>com.ericsson.oss.services.domainproxy.cbrs-events</install-path>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>python-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>tox</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <id>parse-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <configuration>
+                    <requires>
+                        <require>/usr/bin/psql</require>
+                    </requires>
+                    <defineStatements>
+                        <defineStatement>__os_install_post %(echo '%{__os_install_post}' | sed -e
+                            's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+                        </defineStatement>
+                    </defineStatements>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
